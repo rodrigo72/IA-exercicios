@@ -11,11 +11,15 @@ def main():
     graph.add_edge("V2", "V5", 60)
     graph.add_edge("V3", "V4", 25)
     graph.add_edge("V4", "V5", 35)
-    print(graph.shortest_path("V1", "V5"))  # V1 -> V3 -> V4 -> V5
-    print(graph.bfs("V1"))
-    print(graph.dfs("V1"))
-    print(graph.shortest_path("V3", "V5"))
-    graph.draw()
+    # print(graph.shortest_path("V1", "V5"))  # V1 -> V3 -> V4 -> V5
+    # print(graph.bfs("V1"))
+    # print(graph.dfs("V1"))
+    # print(graph.shortest_path("V3", "V5"))
+
+    graph2 = Graph(10000, True)
+    graph2.generate_random_graph(10, 0.22)
+    print(graph2.shortest_path("V1", "V9"))
+    graph2.draw()
 
 
 if __name__ == '__main__':

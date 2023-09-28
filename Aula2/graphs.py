@@ -3,6 +3,7 @@ import heapq
 from collections import deque
 import networkx as nx
 import matplotlib.pyplot as plt
+import random
 
 
 class Graph:
@@ -22,17 +23,41 @@ class Graph:
         return graph_str
 
     def draw(self):
-        g = nx.Graph()
-        for node in self.nodes_map:
-            g.add_node(node)
-        for node in self.nodes_map:
-            for (neighbour, w) in self.nodes_map[node].get_adjacent():
-                g.add_edge(node, neighbour.get_name(), weight=w)
-        pos = nx.spring_layout(g)
-        edge_labels = {(node, neighbor): weight for node, neighbor, weight in g.edges(data='weight')}
-        nx.draw(g, pos, with_labels=True, node_size=500, node_color='skyblue', font_size=12, font_color='black',
-                font_weight='bold')
-        nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels, font_size=10, font_color='black')
+        if self.is_directed:
+            G = nx.DiGraph()  # Use DiGraph for directed edges
+        else:
+            G = nx.Graph()  # Use Graph for undirected edges
+
+        for node_name, node in self.nodes_map.items():
+            G.add_node(node_name)
+            for (neighbour, w) in node.get_adjacent():
+                G.add_edge(node_name, neighbour.get_name(), weight=w)
+
+        pos = nx.spring_layout(G, k=1.5)
+
+        node_colors = [self.nodes_map[node_name].get_degree() for node_name in G.nodes]
+        node_sizes = [200 + 100 * self.nodes_map[node_name].get_degree() for node_name in G.nodes]
+        edge_colors = [weight / self.max_value for (_, _, weight) in G.edges(data='weight')]
+
+        plt.figure(figsize=(10, 6))
+        nx.draw(
+            G,
+            pos,
+            with_labels=True,
+            node_size=node_sizes,
+            node_color=node_colors,
+            cmap=plt.cm.autumn,
+            font_size=10,
+            font_color='black',
+            font_weight='bold',
+            edge_color=edge_colors,
+            edge_cmap=plt.cm.autumn,
+            width=2,  # Set the edge width
+            arrows=self.is_directed,  # Use arrows only for directed graphs
+        )
+        edge_labels = {(node, neighbor): weight for node, neighbor, weight in G.edges(data='weight')}
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=10, font_color='black')
+
         plt.show()
 
     def add_node(self, node):
@@ -58,6 +83,29 @@ class Graph:
 
     def get_vertices(self):
         return self.nodes_map.keys()
+
+    def generate_random_graph(self, num_nodes, edge_probability):
+        if num_nodes <= 0:
+            raise ValueError("Number of nodes must be greater than 0.")
+        if edge_probability < 0 or edge_probability > 1:
+            raise ValueError("Edge probability must be between 0 and 1.")
+
+        # Clear existing graph data
+        self.nodes_map = {}
+        self.num_nodes = 0
+
+        # Create random nodes
+        for i in range(num_nodes):
+            node_name = f"V{i + 1}"
+            self.add_node(node_name)
+
+        # Connect nodes with edges based on the edge probability
+        for node1 in self.nodes_map:
+            for node2 in self.nodes_map:
+                if node1 != node2 and random.random() <= edge_probability:
+                    # Generate a random weight for the edge
+                    weight = random.randint(1, 100)
+                    self.add_edge(node1, node2, weight)
 
     def _reset_nodes(self):
         for node in self.nodes_map.values():

@@ -51,8 +51,11 @@ class Node:
     def previous(self, p):
         self._previous = p
 
+    def get_degree(self):
+        return len(self._adjacent)
+
     def __str__(self):
         return str(self._name) + ' adjacent: ' + ', '.join(self._adjacent.keys())
 
     def __lt__(self, other):
-        return self.distance < other.get_distance()
+        return self.distance < other.distance
