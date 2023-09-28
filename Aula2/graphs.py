@@ -52,8 +52,8 @@ class Graph:
             font_weight='bold',
             edge_color=edge_colors,
             edge_cmap=plt.cm.autumn,
-            width=2,  # Set the edge width
-            arrows=self.is_directed,  # Use arrows only for directed graphs
+            width=2,
+            arrows=self.is_directed,
         )
         edge_labels = {(node, neighbor): weight for node, neighbor, weight in G.edges(data='weight')}
         nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=10, font_color='black')
@@ -144,8 +144,12 @@ class Graph:
         while current is not None and current.get_name() != start_node:
             path.insert(0, current.get_name())
             current = current.previous
+
         if current is not None:
             path.insert(0, current.get_name())
+        else:
+            path = []
+
         return path
 
     def bfs(self, start):
