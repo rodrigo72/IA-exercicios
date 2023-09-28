@@ -1,6 +1,8 @@
 from nodes import Node
 import heapq
 from collections import deque
+import networkx as nx
+import matplotlib.pyplot as plt
 
 
 class Graph:
@@ -18,6 +20,20 @@ class Graph:
         for key in self.nodes_map:
             graph_str += f"{key}: {self.nodes_map[key]}\n"
         return graph_str
+
+    def draw(self):
+        g = nx.Graph()
+        for node in self.nodes_map:
+            g.add_node(node)
+        for node in self.nodes_map:
+            for (neighbour, w) in self.nodes_map[node].get_adjacent():
+                g.add_edge(node, neighbour.get_name(), weight=w)
+        pos = nx.spring_layout(g)
+        edge_labels = {(node, neighbor): weight for node, neighbor, weight in g.edges(data='weight')}
+        nx.draw(g, pos, with_labels=True, node_size=500, node_color='skyblue', font_size=12, font_color='black',
+                font_weight='bold')
+        nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels, font_size=10, font_color='black')
+        plt.show()
 
     def add_node(self, node):
         self.num_nodes += 1

@@ -15,6 +15,7 @@ def main():
     print(graph.bfs("V1"))
     print(graph.dfs("V1"))
     print(graph.shortest_path("V3", "V5"))
+    graph.draw()
 
 
 if __name__ == '__main__':
