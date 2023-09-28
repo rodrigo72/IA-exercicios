@@ -90,20 +90,16 @@ class Graph:
         if edge_probability < 0 or edge_probability > 1:
             raise ValueError("Edge probability must be between 0 and 1.")
 
-        # Clear existing graph data
         self.nodes_map = {}
         self.num_nodes = 0
 
-        # Create random nodes
         for i in range(num_nodes):
             node_name = f"V{i + 1}"
             self.add_node(node_name)
 
-        # Connect nodes with edges based on the edge probability
         for node1 in self.nodes_map:
             for node2 in self.nodes_map:
                 if node1 != node2 and random.random() <= edge_probability:
-                    # Generate a random weight for the edge
                     weight = random.randint(1, 100)
                     self.add_edge(node1, node2, weight)
 
