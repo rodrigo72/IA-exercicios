@@ -24,24 +24,24 @@ class Graph:
 
     def draw(self):
         if self.is_directed:
-            G = nx.DiGraph()  # Use DiGraph for directed edges
+            g = nx.DiGraph()
         else:
-            G = nx.Graph()  # Use Graph for undirected edges
+            g = nx.Graph()
 
         for node_name, node in self.nodes_map.items():
-            G.add_node(node_name)
+            g.add_node(node_name)
             for (neighbour, w) in node.get_adjacent():
-                G.add_edge(node_name, neighbour.get_name(), weight=w)
+                g.add_edge(node_name, neighbour.get_name(), weight=w)
 
-        pos = nx.spring_layout(G, k=1.5)
+        pos = nx.spring_layout(g, k=1.5)
 
-        node_colors = [self.nodes_map[node_name].get_degree() for node_name in G.nodes]
-        node_sizes = [200 + 100 * self.nodes_map[node_name].get_degree() for node_name in G.nodes]
-        edge_colors = [weight / self.max_value for (_, _, weight) in G.edges(data='weight')]
+        node_colors = [self.nodes_map[node_name].get_degree() for node_name in g.nodes]
+        node_sizes = [200 + 100 * self.nodes_map[node_name].get_degree() for node_name in g.nodes]
+        edge_colors = [weight / self.max_value for (_, _, weight) in g.edges(data='weight')]
 
         plt.figure(figsize=(10, 6))
         nx.draw(
-            G,
+            g,
             pos,
             with_labels=True,
             node_size=node_sizes,
@@ -55,8 +55,8 @@ class Graph:
             width=2,
             arrows=self.is_directed,
         )
-        edge_labels = {(node, neighbor): weight for node, neighbor, weight in G.edges(data='weight')}
-        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=10, font_color='black')
+        edge_labels = {(node, neighbor): weight for node, neighbor, weight in g.edges(data='weight')}
+        nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels, font_size=10, font_color='black')
 
         plt.show()
 
