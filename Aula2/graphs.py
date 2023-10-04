@@ -18,8 +18,8 @@ class Graph:
 
     def __str__(self):
         graph_str = ""
-        for key in self.nodes_map:
-            graph_str += f"{key}: {self.nodes_map[key]}\n"
+        for key, node in self.nodes_map.items():
+            graph_str += f"{key}: {node} Coordinates: {node.get_coordinates()}\n"
         return graph_str
 
     def draw(self):
@@ -60,9 +60,9 @@ class Graph:
 
         plt.show()
 
-    def add_node(self, node):
+    def add_node(self, node, coordinates=None):
         self.num_nodes += 1
-        new_node = Node(node, self.max_value)
+        new_node = Node(node, self.max_value, coordinates)
         self.nodes_map[node] = new_node
         return new_node
 
@@ -95,7 +95,7 @@ class Graph:
 
         for i in range(num_nodes):
             node_name = f"V{i + 1}"
-            self.add_node(node_name)
+            self.add_node(node_name, (random.randint(0, 100), random.randint(0, 100)))
 
         for node1 in self.nodes_map:
             for node2 in self.nodes_map:
@@ -148,7 +148,7 @@ class Graph:
 
         return path
 
-    def bfs(self, start):
+    def bfs(self, start, end):
         start_node_obj = self.get_node(start)
         if not start_node_obj:
             return None
@@ -160,13 +160,18 @@ class Graph:
         queue.append(start_node_obj)
         start_node_obj.visited = True
 
-        while queue:
+        path_found = False
+        while queue and not path_found:
             current_node = queue.popleft()
             path.append(current_node.get_name())
-            for (neighbour, _) in current_node.get_adjacent():
-                if not neighbour.visited:
-                    neighbour.visited = True
-                    queue.append(neighbour)
+
+            if current_node.get_name() == end:
+                path_found = True
+            else:
+                for (neighbour, _) in current_node.get_adjacent():
+                    if not neighbour.visited:
+                        neighbour.visited = True
+                        queue.append(neighbour)
 
         return path
 
@@ -188,3 +193,40 @@ class Graph:
         path = []
         dfs_recursive(start_node_obj, path)
         return path
+
+    # h is the heuristic function. h(n) estimates the cost to reach goal from node n.
+    def astar(self, start, goal, h=lambda x, y: 0):
+        self._reset_nodes()
+        start_node_obj = self.nodes_map[start]
+        goal_node_obj = self.nodes_map[goal]
+
+        start_node_obj.heuristic = h(start_node_obj, goal_node_obj)
+        open_set = [(0 + start_node_obj.heuristic, start_node_obj)]
+
+        # distance in the class Node serves the role of g_score
+        # the sum of distance and heuristic serves the role of f_score
+
+        while open_set:
+            current_node = heapq.heappop(open_set)[1]
+
+            if current_node.visited:
+                continue
+            current_node.visited = True
+
+            if current_node.get_name() == goal:
+                path = []
+                while current_node:
+                    path.insert(0, current_node.get_name())
+                    current_node = current_node.previous
+                return path
+
+            for (neighbour, weight) in current_node.get_adjacent():
+                if not neighbour.visited:
+                    tentative_distance = current_node.distance + weight
+                    if tentative_distance < neighbour.distance:
+                        neighbour.distance = tentative_distance
+                        neighbour.previous = current_node
+                        neighbour.heuristic = h(neighbour, goal_node_obj)
+                        heapq.heappush(open_set, (tentative_distance + neighbour.heuristic, neighbour))
+
+        return None

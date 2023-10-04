@@ -1,25 +1,24 @@
 from graphs import Graph
+import math
+
+
+def heuristic(node, goal):
+    if node is None or goal is None:
+        return 0
+
+    dx = node.get_coordinates()[0] - goal.get_coordinates()[0]
+    dy = node.get_coordinates()[1] - goal.get_coordinates()[1]
+
+    return math.sqrt(dx * dx + dy * dy)
 
 
 def main():
 
     graph = Graph(10000, True)
-    graph.add_edge("V1", "V3", 40)
-    graph.add_edge("V1", "V2", 70)
-    graph.add_edge("V2", "V3", 40)
-    graph.add_edge("V2", "V4", 50)
-    graph.add_edge("V2", "V5", 60)
-    graph.add_edge("V3", "V4", 25)
-    graph.add_edge("V4", "V5", 35)
-    # print(graph.shortest_path("V1", "V5"))  # V1 -> V3 -> V4 -> V5
-    # print(graph.bfs("V1"))
-    # print(graph.dfs("V1"))
-    # print(graph.shortest_path("V3", "V5"))
-
-    graph2 = Graph(10000, True)
-    graph2.generate_random_graph(10, 0.22)
-    print(graph2.shortest_path("V1", "V9"))
-    graph2.draw()
+    graph.generate_random_graph(10, 0.22)
+    print(graph.shortest_path("V1", "V9"))
+    print(graph.astar("V1", "V9", heuristic))
+    print(graph)
 
 
 if __name__ == '__main__':
