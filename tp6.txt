@@ -1,0 +1,37 @@
+% Factos:
+
+filho(joao, jose).
+filho(jose, manuel).
+filho(carlos, jose).
+
+pai(paulo, filipe).
+pai(paulo, maria).
+
+avo(antonio, nadia).
+neto(nuno, ana).
+
+masculino(joao).
+masculino(jose).
+
+feminino(maria).
+feminino(joana).
+
+
+% Regras
+
+pai(X, Y) :- filho(Y,X).
+
+avo(X, Y) :- pai(X,A), filho(Y,A).
+
+neto(X, Y) :- avo(Y, X); filho(X, A), pai(Y, A).
+
+descendente(X, Y) :- filho(X, Y).
+descendente(X, Y) :- filho(X, A), descendente(A, Y).
+
+% não sei se funciona
+% descendente(X, Y) :- filho (X, A), ((A = Y); descendente(A, Y)).
+
+grau(X, Y, 1) :- filho(X, Y).
+grau(X, Y, N) :- filho(X, A), grau(A, Y, M), N is M+1.
+
+
